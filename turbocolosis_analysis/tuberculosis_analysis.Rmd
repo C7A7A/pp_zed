@@ -1,0 +1,143 @@
+---
+title: "Analiza zachorowań na gruźlice"
+author: "Mateusz Czajka"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+```{r}
+library(EDAWR)
+library(dplyr)
+library(DT)
+library(skimr)
+```
+
+```{r}
+prettyTable <- function(table_df, round_digits=2) {
+    DT::datatable(table_df, style="bootstrap", filter = "top", rownames = FALSE, extensions = "Buttons", options = list(dom = 'Bfrtip', buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) %>% formatRound(names(dplyr::select_if(table_df, is.numeric)), round_digits)
+}
+```
+
+## Dane
+
+### Podstawowe informacje
+```{r}
+skim(tb)
+```
+
+```{r}
+# column_names <- colnames(tb)
+# column_data_types <- sapply(tb, class)
+# column_info <- data.frame(name = column_names, types = column_data_types)
+
+# knitr::kable(column_info)
+```
+
+
+### Struktura danych
+
+```{r}
+knitr::kable(tail(tb))
+```
+
+## Analiza
+
+```{r}
+tb_na_replaced <- tb %>%
+      replace(is.na(.), 0)
+
+# print(tb_na_replaced)
+```
+
+### Zachorowania - płeć
+
+```{r}
+tb_sex <- tb_na_replaced %>%
+  select(sex, child, adult, elderly) %>%
+  group_by(sex) %>%
+  summarize(total_sum = sum(child + adult + elderly))
+
+knitr::kable(tb_sex)
+```
+
+
+### Zachorowania - wiek
+```{r}
+tb_sums <-
+  tb_na_replaced %>%
+  select(year, child, adult, elderly) %>%
+  group_by(year) %>%
+  summarize(across(c(child, adult, elderly), sum))
+
+knitr::kable(tb_sums)  
+
+max_year <-
+  tb_sums %>%
+  select(year) %>%
+  summarize(max_value = max(year)) %>%
+  pull(max_value)
+
+min_year <-
+  tb_sums %>%
+  select(year) %>%
+  summarize(min_value = min(year)) %>%
+  pull(min_value)
+
+```
+
+```{r}
+year_labels = c(min_year:max_year)
+
+print_plot <- function(labels, y, plot_title="") {
+  matplot(
+    x = labels,
+    y = cbind(y),
+    type = "l",
+    lty = 1,
+    col = c("red", "blue", "green"),
+    xlab = "Rok",
+    ylab = "Liczba zachorowań",
+    main = paste("Liczba zachorowań", plot_title)
+  )
+
+  legend(
+    "topleft", 
+    legend = c("Dzieci", "Dorośli", "Osoby starsze"), 
+    col = c("red", "blue", "green"), 
+    lty = 1
+  )
+}
+
+print_plot(year_labels, select(tb_sums, -year))
+
+```
+
+### Zachorowania - kraj
+
+```{r}
+tb_country_sums <-
+  tb_na_replaced %>%
+  group_by(country, year) %>%
+  summarize(across(c(child, adult, elderly), sum))
+
+tb_split_country <- split(tb_country_sums, select(tb_country_sums, country))
+
+for (tb_country in tb_split_country) {
+  country_name <- tb_country %>% slice(1) %>% pull(country)
+  print_plot(year_labels, select(tb_country, -country, -year), paste("(", country_name, ")"))
+}
+```
