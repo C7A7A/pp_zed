@@ -33,15 +33,18 @@ prettyTable <- function(table_df, round_digits=2) {
 ```
 
 ## Dane
+```{r, cache=TRUE}
+tb_data <- tb
+```
 
 ### Podstawowe informacje
 ```{r}
-skim(tb)
+skim(tb_data)
 ```
 
 ```{r}
-# column_names <- colnames(tb)
-# column_data_types <- sapply(tb, class)
+# column_names <- colnames(tb_data)
+# column_data_types <- sapply(tb_data, class)
 # column_info <- data.frame(name = column_names, types = column_data_types)
 
 # knitr::kable(column_info)
@@ -51,13 +54,13 @@ skim(tb)
 ### Struktura danych
 
 ```{r}
-knitr::kable(tail(tb))
+knitr::kable(tail(tb_data))
 ```
 
 ## Analiza
 
 ```{r}
-tb_na_replaced <- tb %>%
+tb_na_replaced <- tb_data %>%
       replace(is.na(.), 0)
 
 # print(tb_na_replaced)
@@ -121,7 +124,7 @@ print_plot <- function(labels, y, plot_title="") {
     lty = 1
   )
 }
-
+# print(tb_sums)
 print_plot(year_labels, select(tb_sums, -year))
 
 ```
@@ -138,6 +141,7 @@ tb_split_country <- split(tb_country_sums, select(tb_country_sums, country))
 
 for (tb_country in tb_split_country) {
   country_name <- tb_country %>% slice(1) %>% pull(country)
-  print_plot(year_labels, select(tb_country, -country, -year), paste("(", country_name, ")"))
+  # print(tb_country)
+  print_plot(year_labels, select(tb_country, adult, elderly, child), paste0("(", country_name, ")")) # why select in this order works properly???
 }
 ```
