@@ -1,0 +1,96 @@
+---
+title: "GGplot"
+author: "Mateusz Czajka"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+df <- airquality
+View(df)
+```
+
+```{r}
+ggplot(df, aes(x=Temp, y=Ozone, color=factor(Month))) + 
+  geom_line() +
+  geom_point()
+```
+
+
+```{r}
+ggplot(df, aes(x=Temp)) + geom_histogram()
+```
+
+```{r}
+ggplot(df, aes(x=Temp, y=Ozone, color=Wind, fill=factor(Month))) +
+  geom_bar(stat="identity")
+```
+```{r}
+ggplot(df, aes(x=Temp, y=Ozone, color=factor(Month))) +
+  geom_point() +
+  geom_smooth() 
+```
+```{r}
+ggplot(df, aes(x=Temp, y=Ozone, color=factor(Month))) +
+  geom_point() +
+  geom_smooth(method="lm") 
+```
+```{r}
+ggplot(df, aes(x=Temp, y=Ozone, fill=factor(Month), color=factor(Month))) +
+  geom_point() +
+  geom_smooth(method="lm") 
+```
+```{r}
+ggplot(df, aes(x=Temp, y=Ozone, fill=factor(Month), color=factor(Month))) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  facet_grid(.~Month)
+```
+```{r}
+ggplot(df, aes(x=Temp, y=Ozone, fill=factor(Month), color=factor(Month))) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  facet_grid(Day~Month)
+```
+
+```{r}
+ggplot(df, aes(x=Temp, fill=factor(Month), color=factor(Month))) +
+  geom_histogram()
+```
+```{r}
+ggplot(df, aes(x=Temp, fill=factor(Month), color=factor(Month))) +
+  geom_density(alpha=0.3)
+```
+```{r}
+ggplot(df, aes(x=Temp, fill=factor(Month), color=factor(Month))) +
+  geom_density(alpha=0.5) +
+  facet_grid(Month~.)
+```
+```{r}
+ggplot(df, aes(x=Temp, fill=factor(Month), color=factor(Month))) +
+  geom_density(alpha=0.5) +
+  facet_grid(Month~.) +
+  theme_void()
+```
+```{r}
+ggplot(df, aes(x=Temp, fill=factor(Month), color=factor(Month))) +
+  geom_density(alpha=0.5) +
+  theme_void() +
+  coord_flip()
+```
+```{r}
+ggplot(df, aes(x=Temp, fill=factor(Month), color=factor(Month))) +
+  geom_density(alpha=0.5) +
+  theme_bw() +
+  coord_polar()
+```
+
+
