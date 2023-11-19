@@ -1,0 +1,83 @@
+---
+title: "Pokemon"
+author: "Mateusz Czajka"
+date: "2023-11-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  fig.width = 8,
+  fig.height = 8
+)
+```
+
+```{r, warning=F}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r, echo=F}
+df <- read.csv('pokemons.csv')
+df <- select(df, -species, -growth_rate)
+# View(df)
+```
+
+```{r}
+ggplot(df, aes(x=attack, fill=type)) +
+  geom_histogram()
+```
+
+
+```{r}
+ggplot(df, aes(x=attack, y=defense, color=type)) +
+  geom_point()
+```
+
+
+```{r}
+ggplot(df, aes(x=attack, y=defense, color=type)) +
+  geom_point() +
+  geom_text(aes(label = name), vjust=-0.5, size=2)
+```
+```{r}
+ggplot(df, aes(x=attack, fill=type)) +
+  geom_histogram() +
+  facet_grid(type~.) +
+  xlim(0, 150)
+```
+```{r}
+ggplot(df, aes(x=attack, y=defense, color=type)) +
+  geom_point() +
+  geom_smooth()
+  
+```
+```{r}
+ggplot(df, aes(x=attack, y=defense, color=type)) +
+  geom_point() +
+  geom_smooth() +
+  facet_grid(type~.)
+```
+```{r}
+ggplot(df, aes(x=defense, y=hp, color=type)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_grid(type~.)
+```
+```{r}
+ggplot(df, aes(x=attack, fill=type)) +
+  geom_density(alpha=0.5) +
+  theme_bw() +
+  coord_polar()
+```
+```{r}
+ggplot(df, aes(x=sp_atk, fill=type)) +
+  geom_density(alpha=0.5) +
+  theme_bw()
+```
+```{r}
+ggplot(df, aes(x = "", y = type, fill=type)) +
+  geom_bar(stat="identity", width=1, position = position_stack()) +
+  coord_polar(theta = "y")
+```
