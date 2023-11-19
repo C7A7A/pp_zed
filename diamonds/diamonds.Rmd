@@ -1,0 +1,91 @@
+---
+title: "diamonds"
+author: "Mateusz Czajka"
+date: "2023-11-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+df <- diamonds
+View(df)
+```
+
+```{r}
+ggplot(df, aes(x=depth)) + geom_histogram()
+```
+```{r}
+ggplot(df, aes(x=depth)) + geom_histogram(binwidth = 0.2)
+```
+```{r}
+ggplot(df, aes(x=depth)) + geom_histogram(binwidth = 0.2) + xlim(55, 70)
+```
+```{r}
+ggplot(df, aes(x=depth, fill=cut)) +
+  geom_histogram(binwidth = 0.2, alpha = 0.75) + 
+  xlim(55, 70)
+```
+```{r}
+ggplot(df, aes(x=depth)) +
+  geom_histogram(binwidth = 0.2, alpha = 0.75) + 
+  facet_grid(cut~.) +
+  xlim(55, 70) +
+  theme_bw()
+```
+```{r}
+ggplot(df, aes(x=depth)) +
+  geom_histogram(binwidth = 0.2, alpha = 0.75) + 
+  facet_grid(.~cut) +
+  xlim(55, 70)
+```
+```{r}
+ggplot(df, aes(x=price, fill=cut)) +
+  geom_histogram(binwidth = 150) +
+  xlim(0, 15000)
+```
+```{r}
+ggplot(df, aes(x=price, fill=cut)) +
+  geom_histogram(binwidth = 150) +
+  xlim(0, 15000) +
+  facet_grid(cut~.)
+```
+```{r}
+ggplot(df, aes(x=price, fill=cut)) +
+  geom_histogram(binwidth = 150) +
+  xlim(5000, 17500)
+```
+```{r}
+ggplot(df, aes(x=price, fill=cut)) +
+  geom_histogram(binwidth=150) +
+  xlim(5000, 17500) +
+  facet_grid(cut~.)
+```
+```{r}
+ggplot(df, aes(x=log(price), y=log(carat), color=cut)) +
+  geom_point()
+```
+```{r}
+ggplot(df, aes(x=log(price), y=log(carat), color=cut)) +
+  geom_point() +
+  facet_grid(.~cut)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
