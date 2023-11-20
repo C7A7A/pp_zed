@@ -1,0 +1,51 @@
+---
+title: "quiz"
+author: "Mateusz Czajka"
+date: "2023-11-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=F}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+df <- mtcars
+View(df)
+```
+
+```{r}
+df
+```
+
+
+```{r}
+df <- df %>%
+        arrange(desc(hp))
+
+df
+```
+
+```{r}
+names2 = rownames(df)
+names2
+```
+
+
+
+```{r}
+ggplot(df, aes(x=reorder(names2, hp), y=hp, fill=factor(am))) +
+  geom_bar(stat = "identity") +
+  xlab("") +
+  coord_flip() +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Paired")
+```
+
+
+

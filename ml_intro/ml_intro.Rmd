@@ -1,0 +1,65 @@
+---
+title: "intro_ml"
+author: "Mateusz Czajka"
+date: "2023-11-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(caret)
+library(modeldata)
+library(knitr)
+library(dplyr)
+data(mlc_churn)
+kable(summary(mlc_churn))
+View(mlc_churn)
+```
+
+```{r}
+set.seed(9)
+df <- mlc_churn
+df
+```
+
+```{r}
+inTraining <- createDataPartition(
+  y = df$churn,
+  p = .75,
+  list = FALSE
+)
+
+churn_train <- df[inTraining, ]
+churn_test <- df[-inTraining, ]
+```
+
+```{r}
+churn_control <- trainControl(
+  method = "repeatedcv",
+  number = 2,
+  repeats = 5
+)
+```
+
+```{r}
+fit <- train(
+  churn ~ .,
+  data = churn_train,
+  method = "rf",
+  trControl = churn_control,
+  ntree = 10
+)
+```
+
+```{r}
+fit
+```
+
+
+
+
+
