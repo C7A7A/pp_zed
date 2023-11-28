@@ -38,12 +38,59 @@ churn_test <- df[-inTraining, ]
 ```
 
 ```{r}
+churn_grid <- expand.grid(mtry = 10:30)
+
 churn_control <- trainControl(
   method = "repeatedcv",
   number = 2,
-  repeats = 5
+  repeats = 5,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE
+)
+
+fit_tune <- train(
+    churn ~ .,
+    data = churn_train,
+    method = "rf",
+    metric = "ROC",
+    preProc = c("center", "scale"),
+    trControl = churn_control,
+    tuneGrid = churn_grid,
+    ntree = 30
 )
 ```
+
+```{r}
+fit_tune
+```
+
+```{r}
+churn_grid_gbm <- expand.grid(
+  interaction.depth = c(1, 3, 6, 9, 10),
+  n.trees = 50, 
+  shrinkage = seq(.005, .05,.005),
+  n.minobsinnode = 10
+)
+
+fit_tune_gbm <- train(
+    churn ~ .,
+    data = churn_train,
+    method = "gbm",
+    metric = "ROC",
+    preProc = c("center", "scale"),
+    trControl = churn_control,
+    tuneGrid = churn_grid_gbm
+)
+```
+```{r}
+fit_tune_gbm
+```
+```{r}
+churn_classes <- predict(fit_tune_gbm, newdata = churn_test)
+confusion_matrix_gbm <- confusionMatrix(data = churn_classes, churn_test$churn)
+confusion_matrix_gbm
+```
+
 
 ```{r}
 fit <- train(
@@ -57,6 +104,34 @@ fit <- train(
 
 ```{r}
 fit
+```
+```{r}
+churn_classes <- predict(fit_tune, newdata = churn_test)
+confusion_matrix_rf <- confusionMatrix(data = churn_classes, churn_test$churn)
+confusion_matrix_rf
+```
+```{r}
+ggplot(fit_tune) + theme_bw()
+```
+```{r}
+ggplot(fit_tune_gbm) + theme_bw()
+```
+```{r}
+library(pROC)
+caret_tune_probs <- predict(
+  fit_tune, 
+  newdata = churn_test,
+  type="prob"
+)
+
+roc_curve <- roc(
+  response = churn_test$churn,
+  predictor = caret_tune_probs[, "yes"],
+  levels = rev(levels(churn_test$churn))
+)
+
+plot(roc_curve)
+
 ```
 
 

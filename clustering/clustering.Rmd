@@ -1,0 +1,174 @@
+---
+title: "Clustering"
+author: "Mateusz Czajka"
+date: "2023-11-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(factoextra)
+library(fpc)
+library(NbClust)
+```
+
+```{r}
+set.seed(23)
+face <- rFace(1000, p=2, dMoNo=3)
+df = data.frame(x=face[,1], y=face[,2])
+labels = as.integer(attr(face,"grouping"))
+```
+
+```{r}
+km.res <- eclust(
+  df, 
+  "kmeans", 
+  k = 6, 
+  nstart = 25, 
+  graph = F
+)
+
+fviz_cluster(
+  km.res, 
+  palette = "jco", 
+  ggtheme = theme_minimal()
+)
+```
+```{r}
+table(labels, km.res$cluster)
+```
+```{r}
+fviz_silhouette(
+  km.res, 
+  palette = "jco", 
+  ggtheme = theme_classic(), 
+  print.summary = F
+)
+```
+```{r}
+ggplot(df, aes(x, y, color=factor(km.res$cluster))) + 
+    geom_point() + 
+    theme_bw()
+```
+
+
+```{r}
+wss <- (nrow(df) - 1) * sum(apply(df, 2, var))
+for (i in 2:15) 
+  wss[i] <- sum(kmeans(
+    df,
+    centers=i
+  )$withinss)
+
+wssDf = data.frame(n=1:15, wss=wss)
+
+ggplot(wssDf, aes(n, wss)) +
+  geom_point() +
+  geom_line() +
+  theme_minimal()
+```
+
+```{r}
+pam.res <- eclust(
+  df, 
+  "pam", 
+  k = 6, 
+  graph = F
+)
+
+fviz_cluster(
+  pam.res, 
+  palette = "jco", 
+  ggtheme = theme_minimal()
+)
+```
+```{r}
+table(labels, pam.res$cluster)
+```
+```{r}
+fviz_silhouette(
+  pam.res, 
+  palette = "jco", 
+  ggtheme = theme_classic(), 
+  print.summary = F
+)
+```
+```{r}
+ggplot(df, aes(x, y, color=factor(pam.res$cluster))) + 
+    geom_point() + 
+    theme_bw()
+```
+
+```{r}
+hc.res <- eclust(
+  df, 
+  "hclust", 
+  k = 6, 
+  hc_metric = "euclidean", 
+  hc_method = "ward.D2", 
+  graph = F
+)
+
+fviz_dend(
+  hc.res, 
+  show_labels = F, 
+  palette = "jco", 
+  as.ggplot = T
+)
+```
+
+```{r}
+table(labels, hc.res$cluster)
+```
+
+```{r}
+fviz_silhouette(
+  hc.res, 
+  palette = "jco", 
+  ggtheme = theme_classic(), 
+  print.summary = F
+)
+```
+
+```{r}
+ggplot(df, aes(x, y, color=factor(hc.res$cluster))) + 
+    geom_point() + 
+    theme_bw()
+```
+
+```{r}
+dbscan::kNNdistplot(df, k = 3)
+abline(h = 0.5, lty = 2)
+```
+
+```{r}
+db.res <- fpc::dbscan(
+  df, 
+  eps=0.6, 
+  MinPts=3
+)
+
+fviz_cluster(
+  db.res, 
+  df, 
+  stand=F, 
+  ellipse=F, 
+  show.clust.cent=F, 
+  geom="point", 
+  palette="jco", 
+  ggtheme= theme_classic()
+)
+```
+
+```{r}
+table(labels, db.res$cluster)
+```
+
+```{r}
+ggplot(df, aes(x, y, color=factor(db.res$cluster))) + 
+    geom_point() + 
+    theme_bw()
+```
