@@ -20,6 +20,11 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
+devtools::install_github("rstudio/EDAWR")
+```
+
+
+```{r}
 library(EDAWR)
 library(dplyr)
 library(DT)
