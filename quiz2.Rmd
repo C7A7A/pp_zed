@@ -1,0 +1,37 @@
+---
+title: "quiz2"
+author: "Mateusz Czajka"
+date: "2024-01-08"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=F}
+library(ggplot2)
+library(dplyr)
+```
+```{r}
+df <- as.data.frame(Titanic)
+df
+
+```
+
+```{r}
+ggplot(df, aes(x = factor(Class), y = Freq, fill = Sex)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~Survived, scales = "free_x") +
+  facet_wrap(~Age) +
+  xlab("Survived") +
+  ylab("Freq") +
+  theme_classic() +
+  ggtitle("Titanic survivors")
+
+```
+
+
+
+
+
